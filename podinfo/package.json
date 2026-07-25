@@ -1,0 +1,12 @@
+{
+  "name": "@netgrif/podinfo",
+  "version": "1.0.0",
+  "description": "Minimal, dependency-free Node.js app for Kubernetes workshops. Shows pod identity, env vars, and request info.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
