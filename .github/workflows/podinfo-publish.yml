@@ -34,15 +34,11 @@ jobs:
           context: ./podinfo
           file: ./podinfo/Dockerfile
           push: true
-          platforms:
-            - linux/amd64
-            - linux/arm64
-          tags:
-            - netgrif/podinfo:${{ steps.get-version.outputs.version }}
-            - netgrif/podinfo:latest
-          build-args:
-            - "VERSION=${{ steps.get-version.outputs.version }}"
-            - "VCS_REF=${{ github.sha }}"
-            - "BUILD_DATE=${{ github.event.created_at }}"
+          platforms: linux/amd64,linux/arm64
+          tags: netgrif/podinfo:${{ steps.get-version.outputs.version }},netgrif/podinfo:latest
+          build-args: |
+            VERSION=${{ steps.get-version.outputs.version }}
+            VCS_REF=${{ github.sha }}
+            BUILD_DATE=${{ github.event.created_at }}
 
 
