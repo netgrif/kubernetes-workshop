@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: podinfo-config
+data:
+  GREETING: "Hello from ConfigMap"
+  config.json: |
+    {
+      "server": 8080,
+      "timeout": "30s",
+      "features": {
+        "new_ui": true
+      }
+    }

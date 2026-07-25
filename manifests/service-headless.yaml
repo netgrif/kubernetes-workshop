@@ -1,0 +1,27 @@
+# Headless Service (clusterIP: None)
+# A normal ClusterIP service load-balances traffic across pods and gives you
+# one virtual IP — you can't target a specific pod. A headless service skips
+# that: it has no cluster IP of its own, and DNS lookups against it return
+# the individual IP of each pod backing it directly, in the form
+# <pod-name>.<service-name>.<namespace>.svc.cluster.local.
+#
+# This matters for StatefulSets because each replica has a stable, unique
+# identity (podinfo-0, podinfo-1, podinfo-2...) and often needs to be reached
+# individually — e.g. for peer discovery in a database cluster, leader
+# election, or clients that need to talk to a specific replica rather than
+# whichever one a load balancer happens to pick. The headless service is what
+# makes that stable per-pod DNS name resolvable.
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo-headless
+  labels:
+    app: podinfo
+spec:
+  clusterIP: None
+  selector:
+    app: podinfo
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

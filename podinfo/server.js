@@ -5,6 +5,8 @@
 const http = require('http');
 const os = require('os');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 const PORT = process.env.PORT || 8080;
 
@@ -14,6 +16,29 @@ const PORT = process.env.PORT || 8080;
 // stays the same across requests to the same pod).
 const INSTANCE_ID = crypto.randomBytes(4).toString('hex');
 const START_TIME = new Date();
+
+// --- Logging (for PVC demos) ---------------------------------------------
+// LOG_DIR defaults to the current directory, but is configurable so it can
+// point at a mounted PersistentVolumeClaim, e.g. LOG_DIR=/data. The log
+// file name embeds the instance ID so that:
+//   - without a PVC: every pod restart gets a fresh file that disappears
+//     with the container's writable layer when the pod is gone.
+//   - with a PVC mounted at LOG_DIR: files from previous pods/instances
+//     are still there after a restart or reschedule, since the volume
+//     survives the pod's lifecycle. Great to `kubectl exec` in and `ls`
+//     the directory before/after deleting a pod.
+const LOG_DIR = process.env.LOG_DIR || '.';
+const LOG_FILE = path.join(LOG_DIR, `pod-${INSTANCE_ID}.log`);
+
+function log(message) {
+  const line = `[${new Date().toISOString()}] [${INSTANCE_ID}] ${message}`;
+  console.log(line);
+  fs.appendFile(LOG_FILE, line + '\n', (err) => {
+    if (err) {
+      console.error(`Failed to write to log file ${LOG_FILE}: ${err.message}`);
+    }
+  });
+}
 
 // Pick a stable color for this pod, derived from its hostname, so that
 // when you scale replicas and refresh the page, you visually see the
@@ -79,6 +104,7 @@ function handleRoot(req, res) {
         ['Service account', serviceAccount],
         ['Container hostname (os.hostname())', os.hostname()],
         ['Process instance ID (random, set at startup)', INSTANCE_ID],
+        ['Log file (see /logs)', LOG_FILE],
     ]);
 
     const requestRows = renderTable([
@@ -201,7 +227,7 @@ function handleRoot(req, res) {
   </section>
 </main>
 <footer>
-  Endpoints: <code>/</code> this page &middot; <code>/health</code> liveness &middot; <code>/ready</code> readiness &middot; <code>/api</code> JSON version
+  Endpoints: <code>/</code> this page &middot; <code>/health</code> liveness &middot; <code>/ready</code> readiness &middot; <code>/api</code> JSON version &middot; <code>/logs</code> this instance's log file
 </footer>
 </body>
 </html>`;
@@ -220,6 +246,7 @@ function handleApi(req, res) {
         nodeName: process.env.NODE_NAME || null,
         serviceAccount: process.env.POD_SERVICE_ACCOUNT || null,
         instanceId: INSTANCE_ID,
+        logFile: LOG_FILE,
         startedAt: START_TIME.toISOString(),
         now: new Date().toISOString(),
         uptimeSeconds: process.uptime(),
@@ -232,7 +259,27 @@ function handleApi(req, res) {
 }
 
 const server = http.createServer((req, res) => {
-    const url = req.url.split('?')[0];
+  const url = req.url.split('?')[0];
+  const { socketIp } = getRequestIp(req);
+
+  // Skip logging health/readiness probes so the log doesn't fill up with
+  // noise from kubelet hitting them every few seconds.
+  if (url !== '/health' && url !== '/ready') {
+    log(`${req.method} ${url} from ${socketIp}`);
+  }
+
+  if (url === '/logs') {
+    fs.readFile(LOG_FILE, 'utf8', (err, data) => {
+      if (err) {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end(`No log entries yet for this instance (${LOG_FILE}).\n`);
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end(data);
+    });
+    return;
+  }
 
     if (url === '/health') {
         res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -261,12 +308,12 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Pod info app (instance ${INSTANCE_ID}) listening on port ${PORT}`);
+  log(`Pod info app started (instance ${INSTANCE_ID}, listening on port ${PORT}. Logging to ${LOG_FILE}`);
 });
 
 // Graceful shutdown, useful to demo how Kubernetes sends SIGTERM before
 // killing a pod (e.g. during a rolling update or scale-down).
 process.on('SIGTERM', () => {
-    console.log('Received SIGTERM, shutting down gracefully...');
-    server.close(() => process.exit(0));
+  log('Received SIGTERM, shutting down gracefully...');
+  server.close(() => process.exit(0));
 });

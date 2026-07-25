@@ -24,6 +24,26 @@ Other endpoints:
 - `/health` — for a liveness probe
 - `/ready` — for a readiness probe
 - `/api` — same data as JSON, handy for `curl` or load-testing scripts
+- `/logs` — returns the contents of this instance's log file
+
+## Logging (for PVC demos)
+
+Every request is logged to stdout **and** appended to a file named
+`pod-<instance-id>.log`. The instance ID is a random value generated
+once when the process starts, so each pod/container restart gets a
+brand-new log file name.
+
+The log directory is controlled by the `LOG_DIR` env var (defaults to
+`.`, the current working directory):
+
+- **No volume mounted** → the log file lives in the container's
+  writable layer. Delete the pod, and the file is gone with it.
+- **`LOG_DIR` pointed at a mounted PersistentVolumeClaim** (e.g.
+  `LOG_DIR=/data`) → the file survives pod restarts/rescheduling,
+  since the PVC's underlying storage outlives the pod.
+
+`deployment.yaml` includes a `PersistentVolumeClaim` named
+`podinfo-logs` mounted at `/data`, with `LOG_DIR=/data` already set.
 
 ## Run locally
 
@@ -79,3 +99,16 @@ kubectl port-forward svc/podinfo 8080:80
   replicas scale.
 - **Graceful shutdown**: the app handles `SIGTERM` and logs it — good for
   discussing pod termination grace periods.
+- **PersistentVolumeClaims**: with the PVC from `deployment.yaml` mounted
+  at `/data` (`replicas: 1` for this demo, since it's `ReadWriteOnce`):
+  1. Hit `/` a few times, then `kubectl exec` in and `ls /data` — show
+     the `pod-<id>.log` file.
+  2. `kubectl delete pod <name>` and wait for the replacement pod to
+     come up. Note the new pod has a *different* instance ID/log file
+     name (shown on the dashboard and in `/api`).
+  3. `kubectl exec` in again and `ls /data` — the *old* pod's log file
+     is still there, proving the PVC's storage outlived the pod, while
+     the container's own writable layer did not survive.
+  4. Contrast this by temporarily removing the volume mount / unsetting
+     `LOG_DIR` and repeating the same steps — this time the old log
+     file is gone after the pod is deleted.
