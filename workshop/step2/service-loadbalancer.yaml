@@ -1,0 +1,22 @@
+# LoadBalancer
+# Provisions an external load balancer (via your cloud provider, e.g. AWS
+# ELB, GCP LB, Azure LB) and assigns it a public IP address. Traffic from
+# that external IP is routed to the service, which in turn routes to
+# NodePort and ClusterIP under the hood. This is the standard way to expose
+# a service directly to the internet in a cloud-managed cluster. In
+# on-prem/bare-metal clusters without cloud integration, the external IP may
+# stay "pending" unless something like MetalLB is installed.
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo-loadbalancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: podinfo
+    purpose: workshop
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080

@@ -1,0 +1,23 @@
+# NodePort
+# Exposes the service on a static port (default range 30000-32767) on every
+# node's IP address in the cluster. Accessible externally via
+# <NodeIP>:<NodePort>. Builds on top of ClusterIP (a ClusterIP is still
+# created internally). Useful for development/testing or when you don't have
+# a cloud load balancer available, but not ideal for production since you
+# must manage node IPs yourself and there's no built-in traffic distribution
+# across nodes.
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo-nodeport
+spec:
+  type: NodePort
+  selector:
+    app: podinfo
+    purpose: workshop
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: 30080
