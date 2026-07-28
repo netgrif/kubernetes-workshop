@@ -7,7 +7,6 @@ https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fbinar
 ```shell
 minikube start
 
-minikube addons enable ingress
 minikube addons enable dashboard
 minikube addons enable metrics-server
 

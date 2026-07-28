@@ -2,22 +2,29 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: podinfo
+  labels:
+    app: podinfo
+    purpose: workshop
+    step: "4"
 spec:
   serviceName: podinfo-headless
   replicas: 1
   selector:
     matchLabels:
       app: podinfo
+      purpose: workshop
+      step: "4"
   template:
     metadata:
       labels:
         app: podinfo
+        purpose: workshop
+        step: "4"
     spec:
       containers:
         - name: podinfo
           image: netgrif/podinfo:latest
           env:
-            # --- Downward API: expose pod metadata as env vars ---
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -42,6 +49,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: LOG_DIR
+              value: /app/data
+          volumeMounts:
+            - name: log-storage
+              mountPath: /app/data
           ports:
             - containerPort: 8080
           resources:
@@ -51,15 +63,25 @@ spec:
             limits:
               cpu: 100m
               memory: 128Mi
-#          livenessProbe:
-#            httpGet:
-#              path: /health
-#              port: 8080
-#            initialDelaySeconds: 3
-#            periodSeconds: 10
-#          readinessProbe:
-#            httpGet:
-#              path: /ready
-#              port: 8080
-#            initialDelaySeconds: 1
-#            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 1
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: log-storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 100Mi

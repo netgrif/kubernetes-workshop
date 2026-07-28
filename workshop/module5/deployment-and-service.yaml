@@ -54,15 +54,30 @@ spec:
             limits:
               cpu: 100m
               memory: 128Mi
-#          livenessProbe:
-#            httpGet:
-#              path: /health
-#              port: 8080
-#            initialDelaySeconds: 3
-#            periodSeconds: 10
-#          readinessProbe:
-#            httpGet:
-#              path: /ready
-#              port: 8080
-#            initialDelaySeconds: 1
-#            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 1
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo-clusterip
+spec:
+  type: ClusterIP
+  selector:
+    app: podinfo
+    purpose: workshop
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080

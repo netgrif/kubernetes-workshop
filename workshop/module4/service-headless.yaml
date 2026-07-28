@@ -17,10 +17,14 @@ metadata:
   name: podinfo-headless
   labels:
     app: podinfo
+    purpose: workshop
+    step: "4"
 spec:
   clusterIP: None
   selector:
     app: podinfo
+    purpose: workshop
+    step: "4"
   ports:
     - protocol: TCP
       port: 80

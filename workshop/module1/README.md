@@ -1,9 +1,11 @@
-# minikube
+# Module 1: Introduction to Kubernetes
+
+
+## starting minikube
 
 ```shell
 minikube start
 
-minikube addons enable ingress
 minikube addons enable dashboard
 minikube addons enable metrics-server
 
@@ -15,7 +17,34 @@ minikube start
 minikube ip
 ```
 
-# kubectl - cluster info
+### kubectl from minikube
+
+if no kubectl
+
+#### linux
+
+```shell
+alias kubectl="minikube kubectl --"
+```
+
+#### macos
+
+```shell
+alias kubectl="minikube kubectl --"
+```
+
+#### windows
+
+```powershell
+function kubectl { minikube kubectl -- $args }
+```
+
+```cmd
+doskey kubectl=minikube kubectl $*
+```
+
+
+## Cluster info
 
 ```shell
 kubectl get nodes
@@ -31,7 +60,7 @@ kubectl get pods
 kubectl cluster-info
 ```
 
-# kubectl - create pod
+## Create single pod
 
 ```shell
 kubectl run nginx --image=nginx

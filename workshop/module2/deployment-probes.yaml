@@ -47,28 +47,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-            - name: LOG_DIR
-              value: /app/data
-            # Pull individual keys from ConfigMap as env vars
-#            - name: GREETING
-#              valueFrom:
-#                configMapKeyRef:
-#                  name: podinfo-config
-#                  key: GREETING
-            # Pull individual keys from Secret as env vars
-#            - name: SECRET_TOKEN
-#              valueFrom:
-#                secretKeyRef:
-#                  name: podinfo-secret
-#                  key: secret_key
-          volumeMounts:
-#            - name: config-volume
-#              mountPath: /app/mnt/config
-#            - name: secret-volume
-#              mountPath: /app/mnt/secret
-#              readOnly: true
-            - name: logs
-              mountPath: /app/data
           resources:
             requests:
               cpu: 50m
@@ -88,13 +66,3 @@ spec:
               port: 8080
             initialDelaySeconds: 1
             periodSeconds: 5
-      volumes:
-#        - name: config-volume
-#          configMap:
-#            name: podinfo-config
-#        - name: secret-volume
-#          secret:
-#            secretName: podinfo-secret
-        - name: logs
-          persistentVolumeClaim:
-            claimName: podinfo-log-pvc

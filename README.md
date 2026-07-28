@@ -7,10 +7,8 @@ A hands-on workshop repository for learning core Kubernetes concepts. It include
 
 ```text
 kubernetes-workshop/
-├── manifests/          # Kubernetes resource manifests for the workshop exercises
 ├── podinfo/            # The demo application (Node.js) and its own Dockerfile
 ├── workshop/           # (Workshop content)
-├── COMMANDS.md         # Quick-reference kubectl commands
 └── WORKSHOP-SETUP.md   # Environment setup guide (minikube)
 ```
 
@@ -60,48 +58,6 @@ The pre-built image is available on Docker Hub as **`netgrif/podinfo:latest`**.
 
 ---
 
-## Kubernetes Manifests
-
-All manifests are in the `manifests/` directory and use the `netgrif/podinfo:latest` image.
-
-### Resources Covered
-
-| Manifest                    | Kind                   | Description                                               |
-|-----------------------------|------------------------|-----------------------------------------------------------|
-| `pod.yaml`                  | Pod                    | Bare pod with Downward API env vars                       |
-| `deployment.yaml`           | Deployment             | Deployment with ConfigMap, Secret, and PVC volumes        |
-| `configmap.yaml`            | ConfigMap              | App configuration injected as env vars and a mounted file |
-| `secret.yaml`               | Secret                 | Opaque secret (base64-encoded)                            |
-| `pvc.yaml`                  | PersistentVolumeClaim  | 100 Mi `ReadWriteOnce` claim for log persistence          |
-| `statefulset.yaml`          | StatefulSet            | StatefulSet backed by the headless service                |
-| `service-clusterip.yaml`    | Service (ClusterIP)    | Internal-only service                                     |
-| `service-nodeport.yaml`     | Service (NodePort)     | Exposes port `30080` on every node                        |
-| `service-loadbalancer.yaml` | Service (LoadBalancer) | Cloud-provisioned external load balancer                  |
-| `service-headless.yaml`     | Service (Headless)     | Per-pod DNS for StatefulSets                              |
-| `ingress.yaml`              | Ingress                | NGINX Ingress routing `podinfo.local` → ClusterIP         |
-
-### Apply All Manifests
-
-```bash
-kubectl apply -f manifests/
-```
-
-Or apply individual resources:
-
-```bash
-kubectl apply -f manifests/deployment.yaml
-kubectl apply -f manifests/service-clusterip.yaml
-```
-
-### Quick Access via Port-Forward
-
-```bash
-kubectl port-forward svc/podinfo-clusterip 8080:80
-# Open http://localhost:8080
-```
-
----
-
 ## Workshop Setup
 
 See **[WORKSHOP-SETUP.md](WORKSHOP-SETUP.md)** for full setup instructions including minikube installation and addon
@@ -111,7 +67,6 @@ configuration (Ingress, Dashboard, Metrics Server).
 
 ```bash
 minikube start
-minikube addons enable ingress
 minikube addons enable dashboard
 minikube addons enable metrics-server
 ```
