@@ -28,9 +28,10 @@ even though there is one service it does not have na IP so for access we need to
 ```shell
 kubectl exec -it pod/podinfo-2 -n workshop -- sh
 
-wget -qO- http://podinfo-0.podinfo-headless.workshop.svc.cluster.local:8080/api
+wget -qO- http://podinfo-0.podinfo-headless.workshop/api
+# here it should end up with connection refused
 
 wget -qO- http://podinfo-0.podinfo-headless.workshop:8080/api
-
+# this command works and returns a json
 ```
 

@@ -77,7 +77,7 @@ minikube service podinfo-loadbalancer -n workshop
 ```shell
 kubectl apply -f deployment-probes.yaml -n workshop
 
-kubectl get pods -l app=podinfo
+kubectl get pods -l app=podinfo -n workshop
 
-kubectl describe -l app=podinfo -n workshop
+kubectl describe pod -l app=podinfo -n workshop
 ```
