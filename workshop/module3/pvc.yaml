@@ -1,3 +1,11 @@
+#  PV (PersistentVolume) — a piece of actual storage in the cluster (disk, NFS, cloud volume like EBS), provisioned
+#  by an admin or dynamically. It exists independently of any pod.
+#  PVC (PersistentVolumeClaim) — a request for storage made by a user/pod. It says "I need 10GB, read-write" —
+#  Kubernetes then matches (binds) it to a suitable PV.
+#  Relationship: Pods don't use PVs directly — they mount a PVC, and the PVC binds to a PV behind the scenes.
+#  Analogy: PV = an actual storage unit in a warehouse. PVC = a rental request/ticket. The pod just holds the ticket
+#  (PVC) without needing to know which physical unit (PV) it maps to.
+#  Why it matters: Storage in a PV survives even if the pod is deleted — unlike a pod's own filesystem, which is ephemeral.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

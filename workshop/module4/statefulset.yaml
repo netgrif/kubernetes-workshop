@@ -1,3 +1,15 @@
+# A StatefulSet is like a Deployment, but for apps that need stable identity and persistent state — think databases
+# (MySQL, MongoDB, Kafka, etc.).
+# Key differences from a Deployment:
+#  - Stable, unique pod names — pods get predictable names like `app-0`, `app-1`, `app-2` (not random hashes),
+#    and keep that identity even after restarts
+#  - Stable storage — each pod gets its own PVC that persists and reattaches to the *same* pod identity, even if
+#    it's rescheduled
+#  - Ordered deployment/scaling — pods are created, updated, and deleted one at a time, in order (0, 1, 2...),
+#    not all at once
+#
+# Use it for: anything where pods aren't interchangeable clones — e.g., database replicas that each need to remember
+# "which one am I" and keep their own data.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

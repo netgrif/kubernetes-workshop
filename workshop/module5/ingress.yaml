@@ -1,3 +1,10 @@
+#  An Ingress manages external HTTP/HTTPS access to services inside your cluster — routing traffic based on hostname
+#  or URL path to the right Service.
+#  Why: Instead of exposing every Service with its own LoadBalancer (expensive, one per service), you use one Ingress
+#  as a single entry point that routes traffic to multiple services based on rules.
+#  Example: example.com/api → API service, example.com/app → frontend service — all through one Ingress.
+#  Note: Ingress itself is just a set of routing rules — you also need an Ingress Controller (like NGINX or Traefik)
+#  running in the cluster to actually implement those rules.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
