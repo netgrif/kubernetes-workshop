@@ -1,3 +1,19 @@
+# A Kubernetes Pod is the smallest deployable unit in Kubernetes. It's a wrapper around one or more containers that:
+#  Share the same network namespace (same IP address and port space, so containers in a pod can talk to
+#  each other via localhost)
+#  Share storage volumes (can mount the same disk/data)
+#  Are scheduled together on the same node, and live and die together
+#
+# Key points:
+#  - Most pods run just one container — the multi-container pattern is used for tightly coupled helpers
+#    (e.g., a "sidecar" that handles logging or a proxy next to your main app).
+#  - Pods are ephemeral — they're not meant to be durable. If a pod dies, Kubernetes doesn't resurrect that exact pod;
+#    instead, higher-level controllers (like a Deployment or ReplicaSet) create a new one to replace it.
+#  - You rarely create pods directly in production — you define a Deployment, and Kubernetes manages the pods for you
+#    (scaling, restarts, rolling updates).
+#
+# Analogy: Think of a Pod as a small shared apartment. The containers inside are roommates — they share the same address
+# (IP) and utilities (storage/network), but each roommate is still a separate container process.
 apiVersion: v1
 kind: Pod
 metadata:

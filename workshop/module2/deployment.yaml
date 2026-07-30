@@ -1,3 +1,15 @@
+#  A Kubernetes Deployment is a controller that manages a set of identical Pods for you. You declare the desired state
+#  (e.g., "run 3 replicas of this container image"), and the Deployment continuously works to make reality match that state.
+#
+#  It handles:
+#    - Scaling — up or down, on demand
+#    - Self-healing — replaces pods that crash or get deleted
+#    - Rolling updates — swaps in a new version gradually with no downtime
+#    - Rollbacks — revert to a previous version if something breaks
+#
+#  Analogy: If a Pod is an apartment, a Deployment is the property manager making sure there are always exactly N
+#    apartments occupied and in good condition — replacing broken ones and upgrading them over time without kicking
+#    everyone out at once.
 apiVersion: apps/v1
 kind: Deployment
 metadata:

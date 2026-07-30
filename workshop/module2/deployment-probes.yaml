@@ -1,3 +1,13 @@
+# Kubernetes probes are health checks that Kubernetes runs against a container to know its state. Three types:
+#  - Liveness probe — "Is this container still alive?" If it fails, Kubernetes restarts the container.
+#  - Readiness probe — "Is this container ready to accept traffic?" If it fails, Kubernetes removes it from Service
+#    load-balancing (but doesn't restart it).
+#  - Startup probe — "Has this container finished starting up yet?" Delays the other probes until the app has had time
+#    to boot (useful for slow-starting apps).
+#
+#  Checks can be done via an HTTP request, a TCP connection, or running a command inside the container.
+#  Analogy: Liveness = "are you breathing?" (if not, resuscitate). Readiness = "are you ready for customers?"
+#   (if not, put up the "closed" sign but don't call an ambulance).
 apiVersion: apps/v1
 kind: Deployment
 metadata:

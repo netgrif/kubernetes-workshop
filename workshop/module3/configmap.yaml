@@ -1,3 +1,13 @@
+#  A ConfigMap is a Kubernetes object for storing non-sensitive configuration data (key-value pairs, config files,
+#  environment variables) separately from your container images.
+#  Why: Lets you change config without rebuilding your image — just update the ConfigMap and restart/redeploy the pods.
+#  Usage: ConfigMap data can be injected into pods as:
+#   - Environment variables
+#   - Command-line arguments
+#   - Mounted files in a volume
+#
+#    Note: For sensitive data (passwords, API keys, tokens), use a Secret instead — same idea, but meant
+#    for confidential values.
 apiVersion: v1
 kind: ConfigMap
 metadata:
